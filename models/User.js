@@ -26,10 +26,9 @@ const userSchema = new mongoose.Schema({
         default: "Hey there! I am using SocialApp.",
         maxlength: 160
     },
-    // --- Following & Followers Logic ---
     followers: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User' // Ye batata hai ki array mein User ki IDs hongi
+        ref: 'User'
     }],
     following: [{
         type: mongoose.Schema.Types.ObjectId,

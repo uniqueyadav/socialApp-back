@@ -2,7 +2,6 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// @desc    Register a new user
 exports.registerUser = async(req, res) => {
     try {
         const { username, email, password } = req.body;
@@ -35,7 +34,6 @@ exports.registerUser = async(req, res) => {
     }
 };
 
-// @desc    Authenticate user & get token
 exports.loginUser = async(req, res) => {
     try {
         const { email, password } = req.body;
@@ -60,10 +58,6 @@ exports.loginUser = async(req, res) => {
     }
 };
 
-// @desc    Update User Profile
-// ... baaki imports same rahenge ...
-
-// @desc    Update User Profile (Modified for File Upload)
 exports.updateUserProfile = async(req, res) => {
     try {
         const user = await User.findById(req.user._id);
@@ -71,17 +65,14 @@ exports.updateUserProfile = async(req, res) => {
             user.username = req.body.username || user.username;
             user.bio = req.body.bio || user.bio;
 
-            // AGAR FILE UPLOAD HUI HAI TO NAYA PATH SAVE KARO
             if (req.file) {
                 user.profilePic = `uploads/${req.file.filename}`;
             } else {
-                // Agar file nahi hai par URL bheja gaya hai (backward compatibility)
                 user.profilePic = req.body.profilePic || user.profilePic;
             }
 
             const updatedUser = await user.save();
 
-            // Fresh data with populated friends for UI sync
             const finalUser = await User.findById(updatedUser._id)
                 .select("-password")
                 .populate("followers following", "username profilePic bio");
@@ -104,9 +95,6 @@ exports.updateUserProfile = async(req, res) => {
     }
 };
 
-// ... baaki saare functions (login, register, friends) same rahenge ...
-
-// @desc    Get followers and following list with details
 exports.getUserFriends = async(req, res) => {
     try {
         const user = await User.findById(req.params.id)
@@ -124,7 +112,6 @@ exports.getUserFriends = async(req, res) => {
     }
 };
 
-// @desc    Follow or Unfollow/Remove a user
 exports.followUnfollowUser = async(req, res) => {
     try {
         const { id } = req.params;
@@ -138,11 +125,9 @@ exports.followUnfollowUser = async(req, res) => {
         const isFollower = currentUser.followers.includes(id);
 
         if (isFollowing || isFollower) {
-            // Unfollow/Remove logic
             await User.findByIdAndUpdate(req.user._id, { $pull: { following: id, followers: id } });
             await User.findByIdAndUpdate(id, { $pull: { followers: req.user._id, following: req.user._id } });
 
-            // FIXED: Populate followers/following before sending response
             const updatedUser = await User.findById(req.user._id)
                 .select("-password")
                 .populate("followers following", "username profilePic bio");
@@ -171,7 +156,6 @@ exports.followUnfollowUser = async(req, res) => {
     }
 };
 
-// @desc    Get users for "Who to follow" section
 exports.getSuggestedUsers = async(req, res) => {
     try {
         const userId = req.user._id;

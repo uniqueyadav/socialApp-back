@@ -17,7 +17,6 @@ const postSchema = new mongoose.Schema({
     content: {
         type: String,
         required: function() {
-            // Agar image aur video dono nahi hain, tabhi content mandatory hai
             return !this.image && !this.video;
         }
     },
@@ -25,7 +24,6 @@ const postSchema = new mongoose.Schema({
         type: String,
         default: "",
         required: function() {
-            // Agar content aur video dono nahi hain, tabhi image mandatory hai
             return !this.content && !this.video;
         }
     },
@@ -33,13 +31,12 @@ const postSchema = new mongoose.Schema({
         type: String,
         default: "",
         required: function() {
-            // Agar content aur image dono nahi hain, tabhi video mandatory hai
             return !this.content && !this.image;
         }
     },
     postType: {
         type: String,
-        enum: ['text', 'image', 'video'], // 'content' ki jagah 'text' use karna zyada clear hai
+        enum: ['text', 'image', 'video'],
         default: 'text'
     },
     likes: [{
