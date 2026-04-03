@@ -15,7 +15,7 @@ connectDB();
 
 const app = express();
 app.use(cors({
-    origin: "https://your-frontend-link.vercel.app", // Yahan apna deployed frontend URL dalein
+    origin: "https://socialappamit.vercel.app/",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }));
