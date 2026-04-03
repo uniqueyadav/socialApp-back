@@ -14,7 +14,11 @@ dotenv.config();
 connectDB();
 
 const app = express();
-
+app.use(cors({
+    origin: "https://your-frontend-link.vercel.app", // Yahan apna deployed frontend URL dalein
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
+}));
 // --- Middleware ---
 app.use('/uploads', express.static('uploads'));
 app.use(cors()); // Frontend (React) se connection allow karne ke liye
