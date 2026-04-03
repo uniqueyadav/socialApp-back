@@ -14,41 +14,45 @@ dotenv.config();
 connectDB();
 
 const app = express();
+
+// --- 1. CORS Configuration (FIXED) ---
+// Note: Origin se last wala "/" hata diya hai taaki browser block na kare
 app.use(cors({
-    origin: "https://socialappamit.vercel.app/",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
+    origin: "https://socialappamit.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"]
 }));
-// --- Middleware ---
-app.use('/uploads', express.static('uploads'));
-app.use(cors()); // Frontend (React) se connection allow karne ke liye
+
+// --- 2. Standard Middlewares ---
 app.use(express.json()); // JSON data read karne ke liye
 app.use(express.urlencoded({ extended: true })); // Form data handle karne ke liye
+app.use('/uploads', express.static('uploads')); // Static files access karne ke liye
 
-// --- Routes Registration ---
+// --- 3. Routes Registration ---
 // Auth Routes: Signup, Login, Profile Update
 app.use('/api/auth', authRoutes);
 
 // Post Routes: Create, Feed, Like, Comment
 app.use('/api/posts', postRoutes);
 
+// Health Check Route
 app.get('/', (req, res) => {
     res.send('API is running successfully...');
 });
 
-// --- 404 Not Found Middleware ---
+// --- 4. 404 Not Found Middleware ---
 app.use((req, res, next) => {
     const error = new Error(`Not Found - ${req.originalUrl}`);
     res.status(404);
     next(error);
 });
 
-// --- Global Error Handling Middleware ---
+// --- 5. Global Error Handling Middleware ---
 app.use((err, req, res, next) => {
     const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
     res.status(statusCode).json({
         message: err.message,
-        // Development mein error details dikhenge, Production mein nahi
         stack: process.env.NODE_ENV === 'production' ? null : err.stack,
     });
 });
